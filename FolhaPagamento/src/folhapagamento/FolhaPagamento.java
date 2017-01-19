@@ -1,31 +1,18 @@
 package folhapagamento;
 
-import java.text.DateFormat;
+//import java.text.DateFormat;
+//import java.text.SimpleDateFormat;
+//import java.util.GregorianCalendar;
+//import java.util.Locale;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.Date;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FolhaPagamento {
     
-    public static class Empregado{
-        public String nome;
-        public String endereco;
-        public String tipo; //Hourly, salaried or comissioned
-        public String pagamento;
-        public int idade;
-        public int taxa_sindical;
-        public int pos;
-        public double salario_hor;
-        public double salario_men;
-        public double comissao;
-        public boolean sindicato;
-        public boolean ponto;
-        public int id_sindicato;
-        String inicio;
-        String fim;
-    }
-           
     public static void main(String[] args) {
         
         Empregado[] emp = new Empregado[50];
@@ -50,7 +37,7 @@ public class FolhaPagamento {
         System.out.println("1 - Adicionar empregado");
         System.out.println("2 - Remover empregado");
         System.out.println("3 - Lançar um cartão de ponto");
-        System.out.println("4 - Lançar um resultado venda");
+        System.out.println("4 - Vendas");
         System.out.println("5 - Lançar uma taxa de serviço");
         System.out.println("6 - Alterar detalhes de um empregado");
         System.out.println("7 - Rodar a folha de pagamento para hoje");
@@ -67,12 +54,8 @@ public class FolhaPagamento {
             
         
             if(op==1){
-                //emp_aux3 = emp.clone();
                 copiarArray(emp_aux3,emp);
-                /*for(int i=0;i<50;i++){
-                    System.out.println(emp_aux3[i].nome);
-                }*/
-                adicionarEmpregado(emp,empregados,pos);
+                adicionarEmpregado(emp,empregados);
                 empregados++;
                 pos++;
                 emp_aux=emp[empregados];
@@ -97,7 +80,9 @@ public class FolhaPagamento {
                 LancarCartaodePonto(emp,line,empregados);
                 unre=1;               
             } else if (op==4){
-                
+                copiarArray(emp_aux3,emp);
+                scan.nextLine();
+                Vendas(emp,empregados);
             } else if (op==5){
                 
             } else if (op==6){
@@ -115,7 +100,6 @@ public class FolhaPagamento {
             } else if (op==9){
                 //empregados = UndoAndRedo(emp_aux3,emp_aux,empregados,ult_op,unre,alterado); //Atualizar o numero de empregados caso exclua ou adicione
                 if(unre==1){
-                    System.out.println("AQUI");
                     copiarArray(emp,emp_aux3);
                         if(ult_op==1){
                             empregados--;
@@ -143,7 +127,7 @@ public class FolhaPagamento {
     
     }
     
-    public static void adicionarEmpregado(Empregado emp[], int empregados,int pos){
+    public static void adicionarEmpregado(Empregado emp[], int empregados){
             String line;
             int idade;
             double numbers;
@@ -178,7 +162,11 @@ public class FolhaPagamento {
             emp[empregados].comissao = numbers;
             
             emp[empregados].ponto=false;
-            emp[empregados].pos=pos;
+            emp[empregados].qt_vendas=0;
+            
+            for(int i=0;i<100;i++){
+                emp[empregados].venda[i] = new Venda();
+            }
             
             System.out.println("Empregado cadastrado com sucesso!");
         
@@ -314,7 +302,7 @@ public class FolhaPagamento {
     return null;
     }
     
-    public static void LancarCartaodePonto(Empregado emp[], String nome, int empregados){
+    /*public static void LancarCartaodePonto(Empregado emp[], String nome, int empregados){
         for(int i=0;i<empregados;i++){
             if(emp[i].nome.equals(nome)){
                 if(!emp[i].ponto){
@@ -336,51 +324,103 @@ public class FolhaPagamento {
             }
         }
         System.out.println("Empregado não encontrado.");
+    }*/
+    
+    public static void LancarCartaodePonto(Empregado emp[],String nome, int empregados){
+        for(int i=0;i<empregados;i++){
+            if(emp[i].nome.equals(nome)){
+                if(!emp[i].ponto){
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Insira o dia :");
+                    int dia = scan.nextInt();
+                    scan.nextLine();
+                    String hora = scan.nextLine();
+                    System.out.println("Insira o horario de entrada :");
+                    //emp[i].entrada = scan.nextDouble();
+                    emp[i].ponto=true;
+                } else {
+                    System.out.println("Insira o horario de saída :");
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Insira o dia :");
+                    int dia = scan.nextInt();
+                    System.out.println("Insira o horario de saida :");
+                    double saida = scan.nextDouble();
+                    emp[i].horas_trabalhadas[dia] = emp[i].entrada-saida;
+                    emp[i].ponto=false;
+                    System.out.println("Tempo trabalhado  : " + emp[i].horas_trabalhadas[dia]);
+                }
+            }
+        }
+    }
+    public static void Vendas(Empregado emp[], int empregados){
+        System.out.println("Digite o nome do empregado : ");
+        Scanner scan = new Scanner(System.in);
+        String nome = scan.nextLine();
+        
+        for(int i=0;i<empregados;i++){
+            if(emp[i].nome.equals(nome)){
+                System.out.println("----------------------");
+                System.out.println("1 - Registrar Venda");
+                System.out.println("2 - Ver produtos vendidos por este empregado");
+                int op = scan.nextInt();
+                    if(op==1){
+                        RegistrarVenda(nome,emp,empregados);
+                    } else {
+                        LancarComprovanteVenda(emp,i,emp[i].qt_vendas);
+                    }
+                    
+            } else {
+                System.out.println("Empregado não encontrado.");
+            }
+        }
+        
     }
     
-    /*public static void copiarArray(Empregado emp[], Empregado emp_aux[]){
-        for(int i=0;i<emp.length;i++){
-            if(emp_aux[i]==null && emp[i]!=null){
-                emp[i] = new Empregado();
+    public static void RegistrarVenda(String nome,Empregado emp[], int empregados){
+        Scanner scan = new Scanner(System.in);
+        
+        for(int i=0;i<empregados;i++){
+            if(emp[i].nome.equals(nome)){
+                System.out.println("Insira o nome do produto :");
+                emp[i].venda[emp[i].qt_vendas].nome = scan.nextLine();
+                System.out.println("Insira o valor da venda :");
+                emp[i].venda[emp[i].qt_vendas].valor = scan.nextDouble();
+                System.out.println("Insira a quantidade de vezes que foi dividido :");
+                emp[i].venda[emp[i].qt_vendas].dividido = scan.nextInt();
+                
+                System.out.println("Venda salva com sucesso!");
+                System.out.println("------------------------");
+                emp[i].qt_vendas++;
             } else {
-                
-                emp[i]=emp_aux[i];
+                System.out.println("Empregado não encontrado.");
             }
-            
         }
-    }*/
+    }
     
-    /*public static int UndoAndRedo(Empregado emp[],Empregado emp_aux ,int empregados, int op, int unre, int alterado){
-        if(unre==1){ //Pode dar undo
-            if(op==1){//Adicionou o empregado, então vai excluir
-                int pos_aux=0,pos=0;
-                for(int i=0;i<empregados;i++){
-                    if(emp[i].pos>pos_aux){
-                        pos_aux=emp[i].pos;
-                        pos=i;
-                    }
-                }
-                removerEmpregado(emp,emp[pos].nome,empregados);
-                return empregados-1;
-            } else if(op==2){ //Excluiu empregado então vai ter que adicionar de volta
-                emp[empregados]=emp_aux;
-                return empregados+1;
-            } else if(op==6){//Verificar o que alterou para dar undo
-                
+    public static void LancarComprovanteVenda (Empregado emp[], int pos,int qt_vendas){
+        if(qt_vendas>0){
+                for(int i=0;i<qt_vendas;i++){
+                System.out.println("----------- VENDA -----------");
+            System.out.println("Nome do vendedor : " + emp[pos].nome);
+            System.out.println("Nome do produto : " + emp[pos].venda[i].nome);
+            System.out.println("Valor do produto : " + emp[pos].venda[i].valor);
+            System.out.println("Quantidade de vezes que foi dividido : " + emp[pos].venda[i].dividido);    
+
             }
-            
-            
-        } else { //Pode dar redo, depois de ter dado undo
-         
+        } else {
+            System.out.println("Esse empregado ainda não realizou nenhuma venda.");
         }
-    return empregados;
-    }*/
+        
+        
+    }
+    
    
     
     public static void copiarArray(Empregado emp[], Empregado emp_aux[]) {
         for (int i = 0; i < emp.length; i++) {
             
             emp[i] = new Empregado();
+            
             if(emp_aux[i]!=null){
             emp[i].nome = emp_aux[i].nome;
             emp[i].endereco = emp_aux[i].endereco;
@@ -388,26 +428,22 @@ public class FolhaPagamento {
             emp[i].pagamento = emp_aux[i].pagamento;
             emp[i].idade = emp_aux[i].idade;
             emp[i].taxa_sindical = emp_aux[i].taxa_sindical;
-            emp[i].pos = emp_aux[i].pos;
-            emp[i].salario_hor = emp_aux[i].salario_hor;    
+            emp[i].salario_hor = emp_aux[i].salario_hor;
+
+                for(int j=0;i<emp[i].qt_vendas;j++){
+                    if(emp_aux[i].venda[j]!=null){
+                        emp[i].venda[j]=emp_aux[i].venda[j];    
+                    } else {
+                        emp[i].venda[j]= new Venda();
+                    }
+                    
+                }
             }
             
             
             
         }
     }
-    
-    public static int ultimoAdd(Empregado emp[],int empregados){ //Retornar o ultimo empregado adicionado só para usar no UndoAndRedo
-        int valor=0,pos=0;
-        for(int i=0;i<empregados;i++){
-            if(emp[i].pos>valor){
-                valor=emp[i].pos;
-                pos=i;
-            }
-        }
-        return pos;
-    }
-            
     
     
 }
