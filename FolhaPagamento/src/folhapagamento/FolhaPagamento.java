@@ -4,12 +4,12 @@ package folhapagamento;
 //import java.text.SimpleDateFormat;
 //import java.util.GregorianCalendar;
 //import java.util.Locale;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+//import java.text.ParseException;
+//import java.text.SimpleDateFormat;
+//import java.util.Date;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 public class FolhaPagamento {
     
@@ -129,7 +129,7 @@ public class FolhaPagamento {
     
     public static void adicionarEmpregado(Empregado emp[], int empregados){
             String line;
-            int idade;
+            int numb;
             double numbers;
             Scanner scan = new Scanner(System.in);
             
@@ -145,9 +145,13 @@ public class FolhaPagamento {
             line = scan.nextLine();
             emp[empregados].tipo = line;
             
+            System.out.println("Insira o id do empregado : ");
+            numb = scan.nextInt();
+            emp[empregados].id = numb;
+            
             System.out.println("Insira a idade : ");
-            idade = scan.nextInt();
-            emp[empregados].idade = idade;
+            numb = scan.nextInt();
+            emp[empregados].idade = numb;
             
             System.out.println("Insira o salario/hora : ");
             numbers = scan.nextDouble();
@@ -423,6 +427,7 @@ public class FolhaPagamento {
             
             if(emp_aux[i]!=null){
             emp[i].nome = emp_aux[i].nome;
+            emp[i].id = emp_aux[i].id;
             emp[i].endereco = emp_aux[i].endereco;
             emp[i].tipo = emp_aux[i].tipo;
             emp[i].pagamento = emp_aux[i].pagamento;
