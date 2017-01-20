@@ -1,4 +1,7 @@
 package folhapagamento;
+
+import java.util.Date;
+
 public class Empregado {
     
         public int id;
@@ -16,10 +19,10 @@ public class Empregado {
         public int id_sindicato;
         /*String inicio;
         String fim;*/
-        public double entrada;
-        public double saida;
-        public double horas_trabalhadas[] = new double[30];
-        public int dias_trabalhados[] = new int[30];
-        Venda venda[] = new Venda[100];
+        public Date entrada;
+        public Date saida;
+        public int[] minutos_trabalhadas = new int[30];
+        
+        public Venda venda[] = new Venda[100];
         public int qt_vendas;
 }
