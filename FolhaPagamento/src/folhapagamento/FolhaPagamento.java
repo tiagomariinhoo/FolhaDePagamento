@@ -18,14 +18,15 @@ public class FolhaPagamento {
 
         Empregado[] emp = new Empregado[50];
         Empregado[] emp_aux3 = new Empregado[50];
+        Empregado[] emp_aux2 = new Empregado[50];
         Empregado emp_aux = new Empregado();
-        Empregado emp_aux2 = new Empregado();
         
         int empregados = 0;
 
         for (int i = 0; i < emp.length; i++) {
             emp[i] = new Empregado();
             emp_aux3[i] = new Empregado();
+            emp_aux2[i] = new Empregado();
         }
         
         int op = 12, ult_op, unre = 0, pos = 1, alterado = 0;
@@ -66,6 +67,7 @@ public class FolhaPagamento {
 
             
             if (op == 1) {
+                System.out.println("------ ADICIONAR EMPREGADO ------");
                 copiarArray(emp_aux3, emp);
                 adicionarEmpregado(emp, empregados);
                 empregados++;
@@ -73,6 +75,7 @@ public class FolhaPagamento {
                 emp_aux = emp[empregados];
                 unre = 1;
             } else if (op == 2) {
+                System.out.println("------ REMOVER EMPREGADO ------");
                 scan.nextLine();
                 System.out.println("Insira o id do empregado já existente : ");
                 int id;
@@ -84,6 +87,7 @@ public class FolhaPagamento {
                 }
 
             } else if (op == 3) {
+                System.out.println("------ LANÇAR CARTAO DE PONTO ------");
                 copiarArray(emp_aux3, emp);
                 scan.nextLine();
                 System.out.println("Insira o id do empregado já existente : ");
@@ -92,42 +96,65 @@ public class FolhaPagamento {
                 LancarCartaodePonto(emp, id, empregados, dataSistema);
                 unre = 1;
             } else if (op == 4) {
+                System.out.println("------ VENDAS ------");
                 copiarArray(emp_aux3, emp);
                 scan.nextLine();
                 Vendas(emp, empregados);
                 unre = 1;
             } else if (op == 5) {
+                System.out.println("------ LANÇAR TAXA DE SERVIÇO ------");
                 copiarArray(emp_aux3,emp);
                 lancarServico(emp);
+                unre = 1;
             } else if (op == 6) {
+                System.out.println("------ ALTERAR EMPREGADO ------");
                 copiarArray(emp_aux3, emp);
                 scan.nextLine();
                 System.out.println("Insira o id do empregado já existente : ");
                 int id;
                 id = scan.nextInt();
-                emp_aux2 = alterarEmpregado(emp, id, empregados);
+                alterarEmpregado(emp, id, empregados);
                 unre = 1;
             } else if (op == 7) {
-                //copiarArray(emp_aux3, emp);
+                System.out.println("------ LANÇAR FOLHA DE PAGAMENTO ------");
+                copiarArray(emp_aux3, emp);
                 folhaPagamento(dataSistema,emp);
+                unre = 1;
             } else if (op == 8) {
+                System.out.println("------ AGENDAR PAGAMENTO ------");
                 agendaPagamento(emp);
             } else if (op == 9) {
-                //empregados = UndoAndRedo(emp_aux3,emp_aux,empregados,ult_op,unre,alterado); //Atualizar o numero de empregados caso exclua ou adicione
                 if (unre == 1) {
+                    copiarArray(emp_aux2,emp);
                     copiarArray(emp, emp_aux3);
                     if (ult_op == 1) {
                         empregados--;
+                    } else if(ult_op == 2){
+                        empregados++;
                     }
+                    System.out.println("Empregado : " + emp[0].nome);
+                    System.out.println("Undo dado com sucesso!");
+                } else {
+                    copiarArray(emp,emp_aux2);
+                    if(ult_op==1){
+                        empregados++;
+                    } else if(ult_op==2){
+                        empregados--;
+                    }
+                    System.out.println("Empregado : " + emp[0].nome);
+                    System.out.println("Id : " + emp[0].id);
+                    System.out.println("Redo dado com sucesso!");
                 }
                 unre = 0;
             } else if (op == 10) {
+                System.out.println("------ MOSTRAR EMPREGADO ------");
                 scan.nextLine();
                 System.out.println("Insira o id do empregado já existente : ");
                 int id;
                 id = scan.nextInt();
                 mostrarEmpregado(emp, id, empregados);
             } else if (op == 11) {
+                System.out.println("------ AGENDAR NOVO PAGAMENTO ------");
                 novaAgendaPagamento(emp);
             } else {
                 System.out.println("Obrigado por usar o programa!");
@@ -195,6 +222,10 @@ public class FolhaPagamento {
         for(int i=0;i<12;i++){
             emp[empregados].pago_mes[i] = 0;
         }
+        
+        for(int i=0;i<30;i++){
+            emp[empregados].horas_trabalhadas[i] = 0;
+        }
 
         System.out.println("Empregado cadastrado com sucesso!");
 
@@ -214,7 +245,7 @@ public class FolhaPagamento {
     }
 
     public static void mostrarEmpregado(Empregado emp[], int id, int empregados) {
-        for (int i = 0; i < empregados; i++) {
+        for (int i = 0; i < emp.length; i++) {
             //System.out.println("Nome atual : "  + emp[i].nome);
                 if (emp[i].id==id) {
                 System.out.println("Nome : " + emp[i].nome);
@@ -313,20 +344,8 @@ public class FolhaPagamento {
                             return emp[i];
                         }
 
-                    } /*else if (op == 7) {
-                        if (emp[i].sindicato) {
-                            System.out.println("Digite a nova taxa sindical : ");
-                            int number;
-                            number = scan.nextInt();
-                            emp[i].taxa_sindical = number;
-                            System.out.println("Alterado com sucesso!");
-                            return emp[i];
-                        } else {
-                            System.out.println("Esse empregado não pertence ao sindicato!");
-                            return emp[i];
-                        }*/
-
-                     else {
+                     
+                    } else {
                         return emp[i];
                     }
                 }
@@ -612,7 +631,7 @@ public class FolhaPagamento {
     }
 
     public static void copiarArray(Empregado emp[], Empregado emp_aux[]) {
-        for (int i = 0; i < emp.length; i++) {
+        for (int i = 0; i < emp_aux.length; i++) {
 
             emp[i] = new Empregado();
 
@@ -622,10 +641,29 @@ public class FolhaPagamento {
                 emp[i].endereco = emp_aux[i].endereco;
                 emp[i].tipo = emp_aux[i].tipo;
                 emp[i].pagamento = emp_aux[i].pagamento;
+                emp[i].pag_def = emp_aux[i].pag_def;
+                emp[i].pag_dia = emp_aux[i].pag_dia;
+                emp[i].salario_hor = emp_aux[i].salario_hor;
+                emp[i].salario_men = emp_aux[i].salario_men;
+                emp[i].comissao = emp_aux[i].comissao;
+                emp[i].taxa_serv = emp_aux[i].taxa_serv;
+                emp[i].sindicato = emp_aux[i].sindicato;
+                emp[i].ponto = emp_aux[i].ponto;
+                emp[i].id_sindicato = emp_aux[i].id_sindicato;
+                emp[i].entrada = emp_aux[i].entrada;
+                emp[i].saida = emp_aux[i].saida;
                 emp[i].idade = emp_aux[i].idade;
                 emp[i].taxa_sindical = emp_aux[i].taxa_sindical;
-                emp[i].salario_hor = emp_aux[i].salario_hor;
-
+                
+                
+                for(int j=0;j<12;j++){
+                    emp[i].pago_mes[j] = emp_aux[i].pago_mes[j];
+                }
+                
+                for(int j=0;j<30;j++){
+                    emp[i].horas_trabalhadas[j] = emp_aux[j].horas_trabalhadas[j];
+                }
+                
                 for (int j = 0; i < emp[i].qt_vendas; j++) {
                     if (emp_aux[i].venda[j] != null) {
                         emp[i].venda[j] = emp_aux[i].venda[j];
