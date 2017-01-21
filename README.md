@@ -16,12 +16,14 @@
 
 7 - Rodar a folha de pagamento para hoje; FINALIZADO.
 
-8 - Undo/Redo (Parcialmente finalizada);
+8 - Undo/Redo; FINALIZADO.
 
 9 - Agenda de Pagamento; FINALIZADO.
 
 10 - Criação de Novas Agendas de Pagamento (Parcialmente finalizada);
 
 Obs : Projeto feito obrigatoriamente sem alguns conceitos de Orientação à objetos.
+
 Obs2 : Projeto feito no NetBeans IDE 8.2
+
 Obs3 : Importar e executar, a classe "main" é a FolhaPagamento.java , sempre que for direcionado ao menu, ele pedirá a data para simular melhor.
