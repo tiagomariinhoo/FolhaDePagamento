@@ -20,7 +20,7 @@
 
 9 - Agenda de Pagamento; FINALIZADO.
 
-10 - Criação de Novas Agendas de Pagamento (Parcialmente finalizada);
+10 - Criação de Novas Agendas de Pagamento FINALIZADO;
 
 Detalhes : 
 - Por default, as taxas de serviço e do sindicato são cobradas no dia 28.
