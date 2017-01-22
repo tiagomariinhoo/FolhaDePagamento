@@ -32,10 +32,11 @@ public class FolhaPagamento {
         int op = 12, ult_op, unre = 0, pos = 1, alterado = 0;
         int contador = 0, cont_aux = 0;
         boolean problema=false;
+        int ult_util;
         while (op != 0) {
             Scanner scan = new Scanner(System.in);
             do{
-            System.out.println("Insira a data :");
+            System.out.println("Insira a data (dd/mm/aaaa hh:mm:ss) :");
             String data;
             data = scan.nextLine();
             try {
@@ -46,7 +47,7 @@ public class FolhaPagamento {
             }
             } while(true);
             
-            
+            System.out.println("Ultimo dia util do mês : " + ultimoDiaUtil(dataSistema));
             
             System.out.println("------------ MENU ------------ ");
             System.out.println("1 - Adicionar empregado");
@@ -89,7 +90,7 @@ public class FolhaPagamento {
             } else if (op == 3) {
                 System.out.println("------ LANÇAR CARTAO DE PONTO ------");
                 copiarArray(emp_aux3, emp);
-                scan.nextLine();
+                //scan.nextLine();
                 System.out.println("Insira o id do empregado já existente : ");
                 int id;
                 id = scan.nextInt();
@@ -147,12 +148,23 @@ public class FolhaPagamento {
                 }
                 unre = 0;
             } else if (op == 10) {
+                
                 System.out.println("------ MOSTRAR EMPREGADO ------");
-                scan.nextLine();
-                System.out.println("Insira o id do empregado já existente : ");
-                int id;
-                id = scan.nextInt();
-                mostrarEmpregado(emp, id, empregados);
+                System.out.println("Deseja listar todos os empregados?");
+                System.out.println("1 - Sim / 0 - Não");
+                
+                int op2 = scan.nextInt();
+                    if(op2 == 1){
+                        for(int i=0;i<emp.length;i++){
+                            mostrarEmpregado(emp,emp[i].id,empregados);
+                        }
+                    } else {
+                        System.out.println("Insira o id do empregado já existente : ");
+                        int id;
+                        id = scan.nextInt();
+                        mostrarEmpregado(emp, id, empregados);
+                    }
+                
             } else if (op == 11) {
                 System.out.println("------ AGENDAR NOVO PAGAMENTO ------");
                 novaAgendaPagamento(emp);
@@ -184,10 +196,24 @@ public class FolhaPagamento {
         emprego = scan.nextLine();
         emp[empregados].tipo = emprego;
 
-        System.out.println("Insira o id do empregado : ");
-        numb = scan.nextInt();
+        boolean at=false;
+        do{
+            System.out.println("Insira o id do empregado : ");
+            numb = scan.nextInt();
+            for(int i=0;i<emp.length;i++){
+                if(numb==emp[i].id){
+                    System.out.println("Esse id já está sendo usado! Por favor, escolha outro id.");
+                    numb=0;
+                    break;
+                }
+            }
+            if(numb!=0){
+                at=true;
+            }
+        } while(!at);
         emp[empregados].id = numb;
-
+        emp[empregados].pag_def = "Default";
+        
         System.out.println("Insira a idade : ");
         numb = scan.nextInt();
         emp[empregados].idade = numb;
@@ -205,15 +231,19 @@ public class FolhaPagamento {
             emp[empregados].pagamento = "Mensal";
             
         } else if (emprego.equals("Commissioned")){
-            System.out.println("Insira a comissão : ");
+            System.out.println("Insira a comissão (%) : ");
             numbers = scan.nextDouble();
             emp[empregados].comissao = numbers;
-            emp[empregados].pagamento = "Bi-semanal";
+            emp[empregados].pag_def = "Semanal";
+            emp[empregados].pagamento = "Semanal";
+            emp[empregados].dia_sem = 6; //Dia da semana
+            emp[empregados].pag_dia = 1; //Intervalo da semana
         }
 
         emp[empregados].ponto = false;
         emp[empregados].qt_vendas = 0;
-        emp[empregados].pag_def = "Default";
+        
+        emp[empregados].pag_sem = 0;
         
         for (int i = 0; i < 100; i++) {
             emp[empregados].venda[i] = new Venda();
@@ -246,19 +276,21 @@ public class FolhaPagamento {
 
     public static void mostrarEmpregado(Empregado emp[], int id, int empregados) {
         for (int i = 0; i < emp.length; i++) {
-            //System.out.println("Nome atual : "  + emp[i].nome);
-                if (emp[i].id==id) {
-                System.out.println("Nome : " + emp[i].nome);
-                System.out.println("Endereço : " + emp[i].endereco);
-                System.out.println("Tipo : " + emp[i].tipo);
-                System.out.println("Idade : " + emp[i].idade);
-                System.out.println("Salario/hora : " + emp[i].salario_hor);
-                System.out.println("Salario/mês : " + emp[i].salario_men);
-                System.out.println("Comissão : " + emp[i].comissao);
-                return;
+            if(emp[i].nome!=null){
+                    if (emp[i].id==id) {
+                    System.out.println("Nome : " + emp[i].nome);
+                    System.out.println("Endereço : " + emp[i].endereco);
+                    System.out.println("Tipo : " + emp[i].tipo);
+                    System.out.println("Idade : " + emp[i].idade);
+                    System.out.println("Salario/hora : " + emp[i].salario_hor);
+                    System.out.println("Salario/mês : " + emp[i].salario_men);
+                    System.out.println("Comissão : " + emp[i].comissao);
+                        System.out.println("----------------");
+                    return;
+                    }
+            } else {
+                return ;
             }
-            
-            
             
         }
         System.out.println("Empregado não encontrado.");
@@ -351,8 +383,9 @@ public class FolhaPagamento {
                 }
             }
 
-            System.out.println("Empregado não encontrado.");
+            
         }
+        System.out.println("Empregado não encontrado.");
         return null;
     }
 
@@ -362,15 +395,13 @@ public class FolhaPagamento {
 
         for (int i = 0; i < emp.length; i++) {
             if(emp[i].pagamento!=null){
+                System.out.println("Nome : " + emp[i].nome);
+                System.out.println("Pagamento : " + emp[i].pag_def);
+                System.out.println("Tipo : " + emp[i].tipo);
+                
                 if(emp[i].pag_def.equals("Default")){
-                                if (cal.get(Calendar.DAY_OF_MONTH) == 14) {
-                            if (emp[i].pagamento.equals("Bi-semananal")) {
-                                efetuarPagamento(emp[i],dataSistema);
-                                System.out.println("Empregado " + emp[i].nome + " pago com sucesso!");
-                                System.out.println("Valor recebido : " + emp[i].salario_men);
-                            }
-
-                        } else if (cal.get(Calendar.DAY_OF_MONTH) == 28) {
+                                
+                        if (cal.get(Calendar.DAY_OF_MONTH) == ultimoDiaUtil(dataSistema)) {
                                 if (emp[i].pagamento.equals("Mensal") || emp[i].pagamento.equals("Bi-semanal")) {
 
                                 if(efetuarPagamento(emp[i],dataSistema)){
@@ -388,13 +419,13 @@ public class FolhaPagamento {
 
                             }
                         }
-                        //System.out.println("Dia da semana : " + cal.get(Calendar.DAY_OF_WEEK));
                         if (cal.get(Calendar.DAY_OF_WEEK) == 6) {
                             if (emp[i].pagamento.equals("Semanal")) {
                                 if(efetuarPagamento(emp[i],dataSistema)){
-                                    System.out.println("Empregado : " + emp[i].nome + " pago com sucesso!");
+                                    System.out.println("Empregado " + emp[i].nome + " pago com sucesso!");
+                                    
                                 } else {
-                                    System.out.println("Esse empregado já recebeu nesse mês!");
+                                    System.out.println("Esse empregado já recebeu o salário dessa semana!");
                                 }
 
                                 if(cal.get(Calendar.DAY_OF_MONTH) == 28){
@@ -422,6 +453,23 @@ public class FolhaPagamento {
                                     System.out.println("O empregado " + emp[i].nome + " já recebeu esse mês!");
                                     System.out.println("---------------------------");
                                 }
+                    } else if (emp[i].pag_def.equals("Semanal")){
+                        
+                    }
+                } else if (emp[i].pag_def.equals("Semanal")){ 
+                    System.out.println("Ultima semana : " + emp[i].pag_sem);
+                    System.out.println("Pag_dia : " + emp[i].pag_dia);
+                    if(cal.get(Calendar.WEEK_OF_YEAR)> emp[i].pag_sem + emp[i].pag_dia){
+                        if(cal.get(Calendar.DAY_OF_WEEK)==emp[i].dia_sem){
+                            if(efetuarPagamento(emp[i],dataSistema)){
+                                System.out.println("Empregado " + emp[i].nome + " pago com sucesso!");
+                                emp[i].pag_sem = cal.get(Calendar.WEEK_OF_YEAR);
+                            } else {
+                                System.out.println("O empregado " + emp[i].nome + "já recebeu ou não pode receber ainda!");
+                            }
+                        }
+                    } else {
+                        System.out.println("O empregado " + emp[i].nome + "já recebeu ou não pode receber ainda!");
                     }
                 }
                   
@@ -433,19 +481,37 @@ public class FolhaPagamento {
     }
     
     public static void agendaPagamento (Empregado emp[]){
-        System.out.println("Digite um empregado já existente : ");
-        String nome;
+        System.out.println("Digite o id do empregado já existente : ");
+        int id;
         Scanner scan = new Scanner (System.in);
-            nome = scan.nextLine();
+            id = scan.nextInt();
+        String nome;
         for(int i=0;i<emp.length;i++){
-                if(emp[i].nome.equals(nome)){
+                if(emp[i].id ==id){
+                    System.out.println("Empregado : " + emp[i].nome);
+                    System.out.println("Metodo atual : " + emp[i].pag_def);
+                    System.out.println("Metodo atual : " + emp[i].pagamento);
                     System.out.println("Digite o metodo desejado (Mensal, Semanal, Bi-semanal) : ");
+                    scan.nextLine();
                     nome = scan.nextLine();
-                    emp[i].pagamento = nome;
-                } else {
-                    System.out.println("Empregado não encontrado.");
-                }
+                        if(nome.equals("Bi-semanal")){
+                            emp[i].pag_def = "Semanal";
+                            emp[i].pagamento = "Semanal";
+                            emp[i].dia_sem = 6; //Dia da semana
+                            emp[i].pag_dia = 1; //Intervalo da semana
+                        } else if(nome.equals("Mensal")){
+                            emp[i].pagamento = "Mensal";
+                            emp[i].pag_def = "Default";
+                        } else if (nome.equals("Semanal")){
+                            emp[i].pagamento = "Semanal";
+                            emp[i].pag_def = "Default";
+                        }
+                        System.out.println("Alterado com sucesso!");
+                        return ;
+                        
+                } 
             }
+        System.out.println("Empregado não encontrado.");
     }
 
     public static boolean efetuarPagamento(Empregado emp, Date dataSistema) {
@@ -470,13 +536,28 @@ public class FolhaPagamento {
             emp.pago_mes[cal.get(Calendar.MONTH)] = valor ;
             
             System.out.println("Valor recebido : " + valor);
+            for(int i=0;i<emp.qt_vendas;i++){
+                emp.venda[i] = new Venda();
+            }
+            
+            emp.qt_vendas=0;
+            
             return true;
 
         } else if (emp.tipo.equals("Hourly")) {
             double valor = calcPagamentoHorista(emp);
+            
+            if(emp.pag_sem >= cal.get(Calendar.WEEK_OF_YEAR)){
+                return false;
+            }
             emp.pago_mes[cal.get(Calendar.MONTH)] = valor ;
             
+            for(int i=0;i<30;i++){
+                emp.horas_trabalhadas[i]=0;
+            }
+            
             System.out.println("Valor recebido : " + valor);
+            emp.pag_sem = cal.get(Calendar.WEEK_OF_YEAR);
             return true;
         }
         return true;
@@ -485,7 +566,9 @@ public class FolhaPagamento {
     public static double calcPagamentoHorista(Empregado e) {
         double sal = 0;
         for (int i = 0; i < e.horas_trabalhadas.length; i++) {
-            System.out.println("Minutos trabalhados : " + e.horas_trabalhadas[i]);
+            if(e.horas_trabalhadas[i]!=0){
+                System.out.println("Minutos trabalhados : " + e.horas_trabalhadas[i]);
+            }
                 if(e.horas_trabalhadas[i]>8){
                     double falta=e.horas_trabalhadas[i]-8;
                     e.horas_trabalhadas[i]-=falta;
@@ -514,13 +597,34 @@ public class FolhaPagamento {
            }
         return total;
     }
+    
+    public static int ultimoDiaUtil (Date dataSistema){
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(dataSistema);
+        int num = (cal.getActualMaximum(Calendar.DAY_OF_MONTH) - cal.get(Calendar.DAY_OF_MONTH));
+        cal.add(Calendar.DATE,num);
+        //System.out.println("Num : " + num);
+        //System.out.println("Cal day : " + cal.get(Calendar.DAY_OF_MONTH));
+        //System.out.println("Dia da semana : " + cal.get(Calendar.DAY_OF_WEEK));
+            if(cal.get(Calendar.DAY_OF_WEEK)==7){
+                
+                return cal.get(Calendar.DAY_OF_MONTH)-1;
+                
+            } else if(cal.get(Calendar.DAY_OF_WEEK)==1){
+                
+                return cal.get(Calendar.DAY_OF_MONTH)-2;
+                
+            } else {
+                
+                return cal.get(Calendar.DAY_OF_MONTH);
+            }
+    }
 
     public static void LancarCartaodePonto(Empregado emp[], int id, int empregados, Date dataSistema) {
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(dataSistema);
 
         for (int i = 0; i < empregados; i++) {
-           //if(emp[i].nome!=null){
                if (emp[i].id==id) {
                     if (!emp[i].ponto) {
                         Scanner scan = new Scanner(System.in);
@@ -530,6 +634,7 @@ public class FolhaPagamento {
                             emp[i].entrada = DateFormat.getDateTimeInstance().parse(dataEntrada);
                             emp[i].ponto = true;
 
+                            return ;
                         } catch (ParseException ex) {
                             System.out.println("Digite a data corretamente!");
                             return ;
@@ -550,20 +655,19 @@ public class FolhaPagamento {
                             emp[i].ponto = false;
                             double total =(double) minutosTrabalhados/60;
                             System.out.println("Tempo trabalhado  : " + total);
+                            return ;
 
                         } catch (ParseException ex) {
                             System.out.println("Digite a data corretamente!");
                             return ;
                         }
                     }
-                } else {
-                    System.out.println("Empregado não encontrado.");
-                    break;
-                }
+                } 
            
            //}
             
         }
+        System.out.println("Empregado não encontrado.");
     }
 
     public static void Vendas(Empregado emp[], int empregados) {
@@ -706,15 +810,21 @@ public class FolhaPagamento {
             if(emp[i].id==id){
                 System.out.println("Escolha o novo metodo de pagamento : ");
                 System.out.println("1 - Mensal");
-                System.out.println("2 - Bi-semanal");
-                System.out.println("3 - Semanal");
+                System.out.println("2 - Semanal");
                 int op = scan.nextInt();
                 
                     if(op==1){
                         emp[i].pag_def = "Mensal";
                         System.out.println("Digita o dia que deseja ser pago : ");
                         emp[i].pag_dia = scan.nextInt();
+                    } else if(op==2){
+                        emp[i].pag_def = "Semanal";
+                        System.out.println("Digite o intervalo das semanas : ");
+                        emp[i].pag_dia = scan.nextInt();
+                        System.out.println("Digite o dia da semana que deseja receber (1 - Domingo ... 7 - Sábado) : ");
+                        emp[i].dia_sem = scan.nextInt();
                     }
+                    System.out.println("Alterado com sucesso!");
                 
                 
                 return;

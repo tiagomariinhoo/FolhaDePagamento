@@ -11,6 +11,8 @@ public class Empregado {
         public String pagamento;
         public String pag_def;
         public int pag_dia;
+        public int pag_sem;
+        public int dia_sem; //novaAgendaPagamento
         public int idade;
         public double taxa_sindical;
         public double salario_hor;

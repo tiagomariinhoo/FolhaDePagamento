@@ -22,6 +22,10 @@
 
 10 - Criação de Novas Agendas de Pagamento (Parcialmente finalizada);
 
+Detalhes : 
+- Por default, as taxas de serviço e do sindicato são cobradas no dia 28.
+
+
 Obs : Projeto feito obrigatoriamente sem alguns conceitos de Orientação à objetos.
 
 Obs2 : Projeto feito no NetBeans IDE 8.2
